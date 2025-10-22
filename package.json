@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-zalo-v2",
-	"version": "1.4.5",
+	"version": "1.4.6",
 	"description": "Các node hỗ trợ Zalo cho n8n (Đã update API V2)",
 	"keywords": [
 		"n8n-community-node-package",

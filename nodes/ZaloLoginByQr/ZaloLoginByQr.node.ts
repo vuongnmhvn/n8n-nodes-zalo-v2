@@ -94,8 +94,8 @@ export class ZaloLoginByQr implements INodeType {
 		const zaloOptions: any = {
 		selfListen: true,
 		logging: true,
-		 imageMetadataGetter,
-				};
+		imageMetadataGetter,
+		};
 
 		if (proxy) {
 		 zaloOptions.proxy = proxy;
