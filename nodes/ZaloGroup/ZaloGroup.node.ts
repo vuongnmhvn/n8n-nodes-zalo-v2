@@ -17,6 +17,7 @@ export class ZaloGroup implements INodeType {
 		displayName: 'Zalo Group',
 		name: 'zaloGroup',
 		icon: 'file:../shared/zalo.svg',
+		// @ts-ignore
 		group: ['Zalo'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',

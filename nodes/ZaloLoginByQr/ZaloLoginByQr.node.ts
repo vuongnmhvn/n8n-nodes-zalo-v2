@@ -14,6 +14,7 @@ export class ZaloLoginByQr implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Zalo Login Via QR Code',
 		name: 'zaloLoginByQr',
+		// @ts-ignore
 		group: ['Zalo'],
 		version: 1,
 		description: 'LĐăng nhập Zalo bằng QR code và lưu thông tin vào Credentia',
@@ -297,7 +298,7 @@ export class ZaloLoginByQr implements INodeType {
 											// Create credential info file for auto-creation
 											const credentialName = 'Zalo API Credentials';
 											const credentialData = {
-												cookie: JSON.stringify(cookie),
+												cookie: cookie,
 												imei: imei,
 												userAgent: userAgent,
 												proxy: proxy || '',

@@ -17,6 +17,7 @@ export class ZaloPoll implements INodeType {
             displayName: 'Zalo Poll',
             name: 'zaloPoll',
             icon: 'file:../shared/zalo.svg',
+            // @ts-ignore
             group: ['Zalo'],
             version: 1,
             subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
