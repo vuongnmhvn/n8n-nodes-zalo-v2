@@ -12,7 +12,7 @@ Sự khích lệ nhỏ bé từ bạn chính là nguồn động lực to lớn,
 
 Chân thành cảm ơn sự hỗ trợ của bạn! 💛
 
-![Alt text](qr.png)
+![Alt text](qr-tech.png)
 ## Tác giả
 - Nguyễn Minh Vượng
 - Special thanks to @RFS-ADRENO
