@@ -13,67 +13,73 @@ export const zaloGroupOperations: INodeProperties[] = [
 			},
 		},
 		options: [
-			{
-				name: 'Tạo Nhóm',
-				value: 'createGroup',
-				description: 'Tạo một nhóm mới',
-				action: 'Tạo Nhóm',
-			},
-			{
-				name: 'Lấy Thông Tin Nhóm',
-				value: 'getGroupInfo',
-				description: 'Lấy thông tin của một nhóm',
-				action: 'Lấy Thông Tin Nhóm',
-			},
-			{
-				name: 'Thêm Phó Nhóm',
-				value: 'addGroupDeputy',
-				description: 'Thêm phó nhóm cho một nhóm',
-				action: 'Thêm Phó Nhóm',
-			},
-			{
-				name: 'Thêm Thành Viên Vào Nhóm',
-				value: 'addUserToGroup',
-				description: 'Thêm thành viên vào nhóm',
-				action: 'Thêm Thành Viên Vào Nhóm',
-			},
-			{
-				name: 'Đổi Avatar Nhóm',
-				value: 'changeGroupAvatar',
-				description: 'Đổi avatar của nhóm',
-				action: 'Đổi Avatar Nhóm',
-			},
-			{
-				name: 'Đổi Tên Nhóm',
-				value: 'changeGroupName',
-				description: 'Đổi tên của nhóm',
-				action: 'Đổi Tên Nhóm',
-			},
-			{
-				name: 'Lấy Danh Sách Thành Viên',
-				value: 'getGroupMembers',
-				description: 'Lấy danh sách thành viên của nhóm',
-				action: 'Lấy Danh Sách Thành Viên',
-			},
-			{
-				name: 'Lấy Tất Cả Nhóm',
-				value: 'getAllGroups',
-				description: 'Lấy danh sách tất cả các nhóm',
-				action: 'Lấy Tất Cả Nhóm',
-			},
-			{
-				name: 'Xóa Thành Viên Khỏi Nhóm',
-				value: 'removeUserFromGroup',
-				description: 'Xóa thành ra viên khỏi nhóm',
-				action: 'Xóa Thành Viên Khỏi Nhóm',
-			},
-			{
-				name: 'Tạo Ghi Chú',
-				value: 'createNote',
-				description: 'Tạo ghi chú trong nhóm',
-				action: 'Tạo Ghi Chú',
-			},
-		],
+		{
+		name: 'Tạo Nhóm',
+		value: 'createGroup',
+		description: 'Tạo một nhóm mới',
+		action: 'Tạo Nhóm',
+		},
+		{
+		name: 'Lấy Thông Tin Nhóm',
+		value: 'getGroupInfo',
+		description: 'Lấy thông tin của một nhóm',
+		action: 'Lấy Thông Tin Nhóm',
+		},
+		{
+		name: 'Thêm Phó Nhóm',
+		value: 'addGroupDeputy',
+		description: 'Thêm phó nhóm cho một nhóm',
+		action: 'Thêm Phó Nhóm',
+		},
+		{
+		name: 'Thêm Thành Viên Vào Nhóm',
+		value: 'addUserToGroup',
+		description: 'Thêm thành viên vào nhóm',
+		action: 'Thêm Thành Viên Vào Nhóm',
+		},
+		{
+		name: 'Đổi Avatar Nhóm',
+		value: 'changeGroupAvatar',
+		description: 'Đổi avatar của nhóm',
+		action: 'Đổi Avatar Nhóm',
+		},
+		{
+		name: 'Đổi Tên Nhóm',
+		value: 'changeGroupName',
+		description: 'Đổi tên của nhóm',
+		action: 'Đổi Tên Nhóm',
+		},
+		{
+		name: 'Chuyển Quyền Trưởng Nhóm',
+		value: 'changeGroupOwner',
+		description: 'Chuyển quyền trưởng nhóm cho thành viên khác',
+		action: 'Chuyển Quyền Trưởng Nhóm',
+		},
+		{
+		name: 'Lấy Danh Sách Thành Viên',
+		value: 'getGroupMembers',
+		description: 'Lấy danh sách thành viên của nhóm',
+		action: 'Lấy Danh Sách Thành Viên',
+		},
+		{
+		name: 'Lấy Tất Cả Nhóm',
+		value: 'getAllGroups',
+		description: 'Lấy danh sách tất cả các nhóm',
+		action: 'Lấy Tất Cả Nhóm',
+		},
+		{
+		name: 'Xóa Thành Viên Khỏi Nhóm',
+		value: 'removeUserFromGroup',
+		description: 'Xóa thành ra viên khỏi nhóm',
+		action: 'Xóa Thành Viên Khỏi Nhóm',
+		},
+		 {
+					name: 'Tạo Ghi Chú',
+					value: 'createNote',
+					description: 'Tạo ghi chú trong nhóm',
+					action: 'Tạo Ghi Chú',
+				},
+			],
 		default: 'createGroup',
 	},
 ];
@@ -256,6 +262,38 @@ export const zaloGroupFields: INodeProperties[] = [
 			},
 		},
 		description: 'Tên mới của nhóm',
+	},
+
+	/* -------------------------------------------------------------------------- */
+	/*                            zaloGroup:changeGroupOwner                       */
+	/* -------------------------------------------------------------------------- */
+	{
+		displayName: 'ID Nhóm',
+		name: 'groupId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['zaloGroup'],
+				operation: ['changeGroupOwner'],
+			},
+		},
+		description: 'ID của nhóm',
+	},
+	{
+		displayName: 'ID Thành Viên Mới',
+		name: 'memberId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['zaloGroup'],
+				operation: ['changeGroupOwner'],
+			},
+		},
+		description: 'ID của thành viên sẽ trở thành trưởng nhóm mới',
 	},
 
 	/* -------------------------------------------------------------------------- */

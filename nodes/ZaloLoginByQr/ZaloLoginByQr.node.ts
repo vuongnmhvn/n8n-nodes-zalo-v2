@@ -6,6 +6,7 @@ import {
 	NodeOperationError,
 } from 'n8n-workflow';
 import { Zalo } from 'zca-js';
+import { imageMetadataGetter } from '../utils/helper';
 import * as path from 'path';
 import axios from 'axios';
 
@@ -87,24 +88,25 @@ export class ZaloLoginByQr implements INodeType {
 		}
 
 		try {
-			
+		
 
-			const zaloOptions: any = {
-				selfListen: true,
-				logging: true,
-			};
+		const zaloOptions: any = {
+		selfListen: true,
+		logging: true,
+		 imageMetadataGetter,
+				};
 
-			if (proxy) {
-				zaloOptions.proxy = proxy;
-			}
+		if (proxy) {
+		 zaloOptions.proxy = proxy;
+				}
 
-			// Initialize Zalo
-			let zalo: any;
+		// Initialize Zalo
+				let zalo: any;
 
-			// If we have credentials, use them
-			if (selectedCredential) {
-				console.error('Using existing Zalo credentials');
-				zalo = new Zalo(zaloOptions);
+		// If we have credentials, use them
+		if (selectedCredential) {
+		console.error('Using existing Zalo credentials');
+					zalo = new Zalo(zaloOptions);
 
 				// Check if we're using n8n credential or Zalo credential
 				if (selectedCredential === n8nCredential) {

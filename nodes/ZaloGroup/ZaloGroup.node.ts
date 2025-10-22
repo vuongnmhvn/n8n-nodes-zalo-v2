@@ -204,6 +204,27 @@ export class ZaloGroup implements INodeType {
 						});
 					}
 
+					// Chuyển quyền trưởng nhóm
+					else if (operation === 'changeGroupOwner') {
+						const groupId = this.getNodeParameter('groupId', i) as string;
+						const memberId = this.getNodeParameter('memberId', i) as string;
+
+						// API: changeGroupOwner(memberId, groupId)
+						const response = await api.changeGroupOwner(memberId, groupId);
+
+						returnData.push({
+							json: {
+								status: "Thành công",
+								response: response,
+								groupId: groupId,
+								newOwnerId: memberId,
+							},
+							pairedItem: {
+								item: i,
+							},
+						});
+					}
+
 					// Lấy danh sách thành viên
 					else if (operation === 'getGroupMembers') {
 						const groupId = this.getNodeParameter('groupId', i) as string;
