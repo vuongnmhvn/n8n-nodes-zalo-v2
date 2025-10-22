@@ -129,12 +129,44 @@ export class ZaloLoginByQr implements INodeType {
 					// Using Zalo credential
 					console.error('Using Zalo credential for login');
 
-					// Use the credentials to login
-					const cookie = selectedCredential.cookie as string;
+					// Parse cookie safely
+					let cookieParsed;
+					const cookieRaw = selectedCredential.cookie;
+
+					try {
+					 // If cookie is string, parse to Array
+						if (typeof cookieRaw === 'string') {
+					  cookieParsed = JSON.parse(cookieRaw);
+					  console.error('Cookie parsed from string to array');
+					} 
+					// If already Array, use directly
+					 else if (Array.isArray(cookieRaw)) {
+							cookieParsed = cookieRaw;
+					  console.error('Cookie is already an array');
+					 } 
+					// If object (unusual case)
+					else if (typeof cookieRaw === 'object' && cookieRaw !== null) {
+					 cookieParsed = Array.isArray(cookieRaw) ? cookieRaw : [cookieRaw];
+					 console.error('Cookie converted from object');
+					} 
+					 else {
+							throw new NodeOperationError(this.getNode(), 'Invalid cookie format');
+						}
+
+						console.error('Cookie type after parsing:', Array.isArray(cookieParsed) ? 'Array' : typeof cookieParsed);
+						console.error('Cookie length:', Array.isArray(cookieParsed) ? cookieParsed.length : 'N/A');
+						
+					} catch (parseError: any) {
+						console.error('Error parsing cookie:', parseError.message);
+						console.error('Cookie raw value:', JSON.stringify(cookieRaw).substring(0, 200));
+						throw new NodeOperationError(
+							this.getNode(), 
+							`Invalid cookie format in credential. Please recreate the credential by logging in again. Error: ${parseError.message}`
+						);
+					}
+
 					const imei = selectedCredential.imei as string;
 					const userAgent = selectedCredential.userAgent as string;
-					const supportCode = selectedCredential.supportCode as string;
-					const licenseKey = selectedCredential.licenseKey as string;
 
 					// Check if we have a proxy in the credential
 					if (selectedCredential.proxy) {
@@ -142,14 +174,22 @@ export class ZaloLoginByQr implements INodeType {
 						zaloOptions.proxy = selectedCredential.proxy as string;
 					}
 
-					// Log in with the credentials
-					await zalo.login({
-						cookie,
-						imei,
-						userAgent,
-						supportCode,
-						licenseKey,
-					} as any);
+					// Log in with parsed credentials
+					console.error('Logging in with Zalo credentials...');
+					try {
+						await zalo.login({
+							cookie: cookieParsed,
+							imei,
+							userAgent,
+						});
+						console.error('✅ Login successful with existing credentials');
+					} catch (loginError: any) {
+						console.error('❌ Login failed:', loginError.message);
+						throw new NodeOperationError(
+							this.getNode(),
+							`Failed to login with existing credentials: ${loginError.message}. Please recreate the credential.`
+						);
+					}
 				}
 			} else {
 				// No credentials, create a new instance
