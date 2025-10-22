@@ -1,0 +1,79 @@
+{
+	"name": "n8n-nodes-zalo-api-v2",
+	"version": "0.5.65",
+	"description": "Các node hỗ trợ Zalo cho n8n (Đã update API V2)",
+	"keywords": [
+		"n8n-community-node-package",
+		"zalo-nodes",
+		"zalo",
+		"tools",
+		"n8n"
+	],
+	"license": "MIT",
+	"homepage": "https://www.facebook.com/vuongnm.design/",
+	"author": {
+		"name": "vuongnmhvn",
+		"email": "vuongnm.design@gmail.com"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/vuongnmhvn/n8n-nodes-zalo-api-v2"
+	},
+	"engines": {
+		"node": ">=18.10",
+		"pnpm": ">=9.1"
+	},
+	"packageManager": "pnpm@9.1.4",
+	"main": "index.js",
+	"scripts": {
+		"preinstall": "npx only-allow pnpm",
+		"build": "tsc && gulp build:icons",
+		"dev": "tsc --watch",
+		"format": "prettier nodes --write",
+		"lint": "eslint nodes package.json",
+		"lintfix": "eslint nodes package.json --fix",
+		"prepublishOnly": "pnpm build && pnpm lint -c .eslintrc.prepublish.js nodes credentials package.json",
+		"watch": "concurrently \"pnpm run watch\" \"pnpm run start:n8n\"",
+		"start:n8n": "nodemon --watch dist --exec \"npx n8n start\""
+	},
+	"files": [
+		"dist"
+	],
+	"n8n": {
+		"n8nNodesApiVersion": 1,
+		"credentials": [
+			"dist/credentials/N8nZaloApi.credentials.js",
+			"dist/credentials/ZaloApi.credentials.js"
+		],
+		"nodes": [
+			"dist/nodes/ZaloLoginByQr/ZaloLoginByQr.node.js",
+			"dist/nodes/ZaloSendMessage/ZaloSendMessage.node.js",
+			"dist/nodes/ZaloUser/ZaloUser.node.js",
+			"dist/nodes/ZaloGroup/ZaloGroup.node.js",
+			"dist/nodes/ZaloMessageTrigger/ZaloMessageTrigger.node.js",
+			"dist/nodes/ZaloFriendTrigger/ZaloFriendTrigger.node.js",
+			"dist/nodes/ZaloPoll/ZaloPoll.node.js",
+			"dist/nodes/ZaloTag/ZaloTag.node.js"
+		]
+	},
+	"devDependencies": {
+		"@typescript-eslint/parser": "^7.15.0",
+		"concurrently": "^9.1.2",
+		"eslint": "^8.56.0",
+		"eslint-plugin-n8n-nodes-base": "^1.16.1",
+		"gulp": "^4.0.2",
+		"nodemon": "^3.1.9",
+		"prettier": "^3.3.2",
+		"typescript": "^5.5.3"
+	},
+
+	"peerDependencies": {
+		"n8n-core": ">=1.0.0",
+		"n8n-workflow": ">=1.0.0"
+	},
+	"dependencies": {
+		"axios": "^1.8.4",
+		"pnpm": "^10.6.5",
+		"zca-js": "^2.0.4"
+	}
+}
