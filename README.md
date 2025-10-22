@@ -35,7 +35,7 @@ Bạn cũng có thể cài đặt node này theo cách thủ công:
 
 ```
 cd YOUR_N8N_INSTALLATION_DIRECTORY
-npm install n8n-nodes-zalo-tools
+npm install n8n-nodes-zalo-api-v2
 ```
 
 ## Available Nodes

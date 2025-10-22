@@ -24,7 +24,7 @@ Community Nodes là các nodes được phát triển bởi cộng đồng n8n. 
 1. Mở n8n và đăng nhập vào tài khoản của bạn
 2. Điều hướng đến phần "Settings" (Cài đặt)
 3. Chọn "Community Nodes" (Nodes cộng đồng)
-4. Nhập tên package: `n8n-nodes-zalo-tools`
+4. Nhập tên package: `n8n-nodes-zalo-api-v2`
 5. Click "Install" (Cài đặt)
 6. Chờ quá trình cài đặt hoàn tất
 7. Khởi động lại n8n để áp dụng các thay đổi
@@ -42,7 +42,7 @@ Community Nodes là các nodes được phát triển bởi cộng đồng n8n. 
 2. Chạy lệnh sau để cài đặt Zalo Nodes:
 
 ```bash
-npm install n8n-nodes-zalo-tools
+npm install n8n-nodes-zalo-api-v2
 ```
 
 3. Khởi động lại n8n để áp dụng các thay đổi
@@ -101,8 +101,8 @@ docker-compose restart
 Nếu vẫn gặp vấn đề, hãy thử cài đặt lại:
 
 ```bash
-npm uninstall n8n-nodes-zalo-tools
-npm install n8n-nodes-zalo-tools
+npm uninstall n8n-nodes-zalo-api-v2
+npm install n8n-nodes-zalo-api-v2
 ```
 
 

@@ -1,6 +1,6 @@
-#  N8N-NODES-ZALO-TOOLS
+#  n8n-nodes-zalo-api-v2
 
-Nodes-Zalo-Tools cho n8n là một bộ công cụ cho phép bạn tích hợp các tính năng của Zalo cá nhân vào quy trình làm việc của n8n. Bộ công cụ này bao gồm các node để tương tác với Zalo qua nhiều chức năng.
+n8n-nodes-zalo-api-v2 cho n8n là một bộ công cụ cho phép bạn tích hợp các tính năng của Zalo cá nhân vào quy trình làm việc của n8n. Bộ công cụ này bao gồm các node để tương tác với Zalo qua nhiều chức năng.
 
 ## Tính năng
 - **Login Zalo Via QR**: Đăng nhập Zalo thông qua QR
@@ -14,6 +14,7 @@ Nodes-Zalo-Tools cho n8n là một bộ công cụ cho phép bạn tích hợp c
   - Thêm/xóa thành viên
   - Thay đổi thông tin nhóm
   - Quản lý quyền thành viên
+  - Chuyển quyền trường phòng
 
 - **Zalo User Node**: Quản lý tương tác người dùng
   - Gửi lời mời kết bạn
@@ -34,5 +35,5 @@ Nodes-Zalo-Tools cho n8n là một bộ công cụ cho phép bạn tích hợp c
 
 ## Hỗ trợ
 
-- [Báo cáo lỗi](https://github.com/ChickenAI/zalo-node) : https://github.com/ChickenAI/zalo-node
-- [Liên hệ hỗ trợ](mailto:trungduong13082000@gmail.com) : trungduong13082000@gmail.com
+- [Báo cáo lỗi](https://github.com/vuongnmhvn/n8n-nodes-zalo-api-v2/tree/main) : https://github.com/vuongnmhvn/n8n-nodes-zalo-api-v2/tree/main
+- [Liên hệ hỗ trợ](mailto:vuongnm.design@gmail.com) : vuongnm.design@gmail.com
