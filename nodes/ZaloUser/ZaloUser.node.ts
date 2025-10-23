@@ -7,7 +7,6 @@ import {
 } from 'n8n-workflow';
 import { zaloUserOperations, zaloUserFields } from './ZaloUserDescription';
 import { API, ThreadType, Zalo } from 'zca-js';
-import { imageMetadataGetter } from '../utils/helper';
 
 let api: API | undefined;
 
@@ -16,7 +15,6 @@ export class ZaloUser implements INodeType {
 		displayName: 'Zalo User',
 		name: 'zaloUser',
 		icon: 'file:../shared/zalo.svg',
-		// @ts-ignore
 		group: ['Zalo'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
@@ -69,7 +67,7 @@ export class ZaloUser implements INodeType {
 		const imei = imeiFromCred ?? items.find((x) => x.json.imei)?.json.imei as string;
 		const userAgent = userAgentFromCred ?? items.find((x) => x.json.userAgent)?.json.userAgent as string;
 
-		const zalo = new Zalo({ imageMetadataGetter });
+		const zalo = new Zalo();
 		const _api = await zalo.login({ cookie, imei, userAgent });
 		api = _api;
 
@@ -170,30 +168,10 @@ export class ZaloUser implements INodeType {
 					// Thay đổi cài đặt tài khoản
 					else if (operation === 'changeAccountSetting') {
 						const name = this.getNodeParameter('name', i) as string;
-						const dobInput = this.getNodeParameter('dob', i) as string;
+						const dob = this.getNodeParameter('dob', i) as any;
 						const gender = this.getNodeParameter('gender', i) as number;
 
-						// Convert dob to yyyy-mm-dd format if needed
-						let dob: `${string}-${string}-${string}`;
-						if (dobInput.includes('-')) {
-							// Already in correct format
-							dob = dobInput as `${string}-${string}-${string}`;
-						} else {
-							// Convert from other format (e.g., timestamp or Date object)
-							const dateObj = new Date(dobInput);
-							const year = dateObj.getFullYear();
-							const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-							const day = String(dateObj.getDate()).padStart(2, '0');
-							dob = `${year}-${month}-${day}` as `${string}-${string}-${string}`;
-						}
-
-						const response = await api.updateProfile({
-							profile: {
-								name,
-								dob,
-								gender
-							}
-						});
+						const response = await api.updateProfile(name, dob, gender);
 
 						returnData.push({
 							json: {

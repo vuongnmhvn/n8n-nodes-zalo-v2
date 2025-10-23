@@ -8,7 +8,6 @@ import {
 } from 'n8n-workflow';
 import { zaloGroupOperations, zaloGroupFields } from './ZaloGroupDescription';
 import { API, Zalo } from 'zca-js';
-import { imageMetadataGetter, saveFile, removeFile } from '../utils/helper';
 
 let api: API | undefined;
 
@@ -17,7 +16,6 @@ export class ZaloGroup implements INodeType {
 		displayName: 'Zalo Group',
 		name: 'zaloGroup',
 		icon: 'file:../shared/zalo.svg',
-		// @ts-ignore
 		group: ['Zalo'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
@@ -70,7 +68,7 @@ export class ZaloGroup implements INodeType {
 		const imei = imeiFromCred ?? items.find((x) => x.json.imei)?.json.imei as string;
 		const userAgent = userAgentFromCred ?? items.find((x) => x.json.userAgent)?.json.userAgent as string;
 
-		const zalo = new Zalo({ imageMetadataGetter });
+		const zalo = new Zalo();
 		const _api = await zalo.login({ cookie, imei, userAgent });
 		api = _api;
 
@@ -154,40 +152,18 @@ export class ZaloGroup implements INodeType {
 						const groupId = this.getNodeParameter('groupId', i) as string;
 						const imageUrl = this.getNodeParameter('imageUrl', i) as string;
 
-						// Download ảnh từ URL về file tạm
-						const avatarPath = await saveFile(imageUrl);
+						const response = await api.changeGroupAvatar(groupId, imageUrl);
 
-						if (!avatarPath) {
-							throw new NodeOperationError(
-								this.getNode(),
-								'Không thể tải ảnh từ URL',
-								{ itemIndex: i }
-							);
-						}
-
-						try {
-							// Gửi file path đến Zalo API
-							// API sẽ tự động sử dụng imageMetadataGetter để lấy thông tin ảnh
-							const response = await api.changeGroupAvatar(avatarPath, groupId);
-
-							// Xoá file tạm sau khi gửi thành công
-							removeFile(avatarPath);
-
-							returnData.push({
-								json: 
+						returnData.push({
+							json: 
                             {
                                 status: "Thành công",
-									response: response,
+								response: response,
                             },
-								pairedItem: {
-									item: i,
-								},
-							});
-						} catch (error) {
-							// Xoá file tạm nếu có lỗi
-							removeFile(avatarPath);
-							throw error;
-						}
+							pairedItem: {
+								item: i,
+							},
+						});
 					}
 
 					// Đổi tên nhóm
@@ -199,27 +175,6 @@ export class ZaloGroup implements INodeType {
 
 						returnData.push({
 							json: response,
-							pairedItem: {
-								item: i,
-							},
-						});
-					}
-
-					// Chuyển quyền trưởng nhóm
-					else if (operation === 'changeGroupOwner') {
-						const groupId = this.getNodeParameter('groupId', i) as string;
-						const memberId = this.getNodeParameter('memberId', i) as string;
-
-						// API: changeGroupOwner(memberId, groupId)
-						const response = await api.changeGroupOwner(memberId, groupId);
-
-						returnData.push({
-							json: {
-								status: "Thành công",
-								response: response,
-								groupId: groupId,
-								newOwnerId: memberId,
-							},
 							pairedItem: {
 								item: i,
 							},

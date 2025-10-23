@@ -6,7 +6,7 @@ import {
 	NodeOperationError
 } from 'n8n-workflow';
 import { API, ThreadType, Zalo } from 'zca-js';
-import { saveFile, removeFile, imageMetadataGetter } from '../utils/helper';
+import { saveFile, removeFile, imageMetadataGetter, parseCookieFromCredential } from '../utils/helper';
 
 let api: API | undefined;
 
@@ -200,16 +200,46 @@ export class ZaloSendMessage implements INodeType {
 		const items = this.getInputData();
 		const zaloCred = await this.getCredentials('zaloApi');
 
-		// Parse credentials
-		const cookieFromCred = JSON.parse(zaloCred.cookie as string);
+		// === DEBUG LOGGING ===
+		console.log('=== CREDENTIAL DEBUG ===');
+		console.log('Cookie raw type:', typeof zaloCred.cookie);
+		console.log('Cookie raw value (first 100 chars):', JSON.stringify(zaloCred.cookie).substring(0, 100));
+		console.log('IMEI:', zaloCred.imei);
+		console.log('UserAgent (first 50 chars):', (zaloCred.userAgent as string)?.substring(0, 50));
+
+		// Parse cookie - xử lý cả v1 và v2
+		let cookieFromCred;
+		try {
+			cookieFromCred = parseCookieFromCredential(zaloCred.cookie);
+			console.log('✅ Cookie parsed successfully');
+			console.log('Cookie is Array:', Array.isArray(cookieFromCred));
+			console.log('Cookie length:', cookieFromCred?.length);
+			if (cookieFromCred && cookieFromCred.length > 0) {
+				console.log('First cookie item keys:', Object.keys(cookieFromCred[0]));
+			}
+		} catch (error) {
+			console.error('❌ Cookie parse failed:', (error as Error).message);
+			throw new NodeOperationError(
+				this.getNode(),
+				`${(error as Error).message}. Please login again with QR code.`
+			);
+		}
+
 		const imeiFromCred = zaloCred.imei as string;
 		const userAgentFromCred = zaloCred.userAgent as string;
 
 		// Initialize Zalo API
 		try {
-			const zalo = new Zalo({
-				imageMetadataGetter
+			console.log('🔐 Initializing Zalo...');
+			const zalo = new Zalo({ imageMetadataGetter });
+			
+			console.log('🔑 Attempting login...');
+			console.log('Login params:', {
+				cookieLength: cookieFromCred?.length,
+				hasImei: !!imeiFromCred,
+				hasUserAgent: !!userAgentFromCred
 			});
+			
 			api = await zalo.login({ 
 				cookie: cookieFromCred,
 				imei: imeiFromCred, 
@@ -219,13 +249,15 @@ export class ZaloSendMessage implements INodeType {
 			if (!api) {
 				throw new NodeOperationError(this.getNode(), 'Failed to initialize Zalo API. Check your credentials.');
 			}
+			
+			console.log('✅ Login successful!');
 		} catch (error) {
+			console.error('❌ Login failed:', error);
 			throw new NodeOperationError(this.getNode(), `Zalo login error: ${(error as Error).message}`);
 		}
 
 		for (let i = 0; i < items.length; i++) {
 			try {
-				// Get parameters
 				const threadId = this.getNodeParameter('threadId', i) as string;
 				const typeNumber = this.getNodeParameter('type', i) as number;
 				const type = typeNumber === 0 ? ThreadType.User : ThreadType.Group;
@@ -235,17 +267,12 @@ export class ZaloSendMessage implements INodeType {
 				const mentions = this.getNodeParameter('mentions', i, {}) as any;
 				const attachments = this.getNodeParameter('attachments', i, {}) as any;
 
-				// Create message content
-				const messageContent: any = {
-					msg: message,
-				};
+				const messageContent: any = { msg: message };
 
-				// Add urgency if specified
 				if (urgency !== 0) {
 					messageContent.urgency = urgency;
 				}
 
-				// Add quote if specified
 				if (quote && Object.keys(quote).length > 0) {
 					messageContent.quote = {
 						msgId: quote.msgId,
@@ -254,7 +281,6 @@ export class ZaloSendMessage implements INodeType {
 					};
 				}
 
-				// Add mentions if specified
 				if (mentions && Object.keys(mentions).length > 0) {
 					messageContent.mentions = [{
 						pos: mentions.pos || 0,
@@ -263,51 +289,43 @@ export class ZaloSendMessage implements INodeType {
 					}];
 				}
 
-				// Add attachments if specified
 				if (attachments && attachments.attachment && attachments.attachment.length > 0) {
 					messageContent.attachments = [];
 					for (const attachment of attachments.attachment) {
-						let fileData;
 						if (attachment.type === 'url') {
-							 fileData = await saveFile(attachment.imageUrl);
+							const fileData = await saveFile(attachment.imageUrl);
+							if (fileData) {
+								messageContent.attachments.push(fileData);
+							}
 						}
-						
-
-						messageContent.attachments.push(fileData);
 					}
 				}
 
-				// Log the parameters before sending
-				this.logger.info(`Sending message with parameters: ${JSON.stringify(messageContent)}`);
-				// Send the message
+				this.logger.info(`Sending message: ${JSON.stringify(messageContent)}`);
+				
 				if (!api) {
 					throw new NodeOperationError(this.getNode(), 'Zalo API not initialized');
 				}
 
-				//Send typing event
+				// Send typing event
 				try {
-					const result = await api.sendTypingEvent(threadId, type);
-					if (!!result) {
-						this.logger.info("Send! typing event")
-					}
-				}
-				catch (e) {
-					this.logger.error("Cannot send typing event")
+					await api.sendTypingEvent(threadId, type);
+					this.logger.info("Typing event sent");
+				} catch (e) {
+					this.logger.error("Cannot send typing event:", e);
 				}
 				
 				// Send message
 				const response = await api.sendMessage(messageContent, threadId, type);
 
-				//Remove temp img
-				if (messageContent.attachments && messageContent.attachments.length > 0){
+				// Remove temp files
+				if (messageContent.attachments && messageContent.attachments.length > 0) {
 					for (const attachment of messageContent.attachments) {
-						this.logger.info(`Remove attachment: ${attachment}`);
-
-						removeFile(attachment)
+						removeFile(attachment);
 					}
 				}
-				this.logger.info('Message sent successfully', { threadId, type });
 
+				this.logger.info('Message sent successfully');
 
 				returnData.push({
 					json: {
@@ -321,6 +339,7 @@ export class ZaloSendMessage implements INodeType {
 				
 			} catch (error) {
 				this.logger.error('Error sending Zalo message:', error);
+				console.error('Full error details:', error);
 				
 				if (this.continueOnFail()) {
 					returnData.push({

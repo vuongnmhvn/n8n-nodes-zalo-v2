@@ -16,7 +16,6 @@ export async function saveFile(url: string): Promise<string | null> {
 			fs.mkdirSync(dataStoragePath, { recursive: true });
 		}
 
-		// Lấy phần mở rộng từ URL (nếu có), ví dụ: .png, .pdf
 		const urlPath = new URL(url).pathname;
 		const ext = path.extname(urlPath) || '.bin';
 
@@ -24,7 +23,7 @@ export async function saveFile(url: string): Promise<string | null> {
 		const filePath = path.join(dataStoragePath, `temp-${timestamp}${ext}`);
 
 		const { data } = await axios.get(url, { responseType: 'arraybuffer' });
-		fs.writeFileSync(filePath, data); // đúng kiểu nhị phân
+		fs.writeFileSync(filePath, data);
 
 		return filePath;
 	} catch (error) {
@@ -43,6 +42,33 @@ export function removeFile(filePath: string): void {
 		}
 	} catch (error) {
 		console.error('Lỗi khi xoá file:', error);
+	}
+}
+
+/**
+ * Parse cookie từ credential - xử lý cả v1 (double stringify) và v2
+ * @param cookieRaw - Cookie từ credential
+ * @returns Array cookie đã parse
+ * @throws Error nếu format không hợp lệ
+ */
+export function parseCookieFromCredential(cookieRaw: any): any[] {
+	try {
+		// Nếu là string, parse lần 1
+		let parsed = typeof cookieRaw === 'string' ? JSON.parse(cookieRaw) : cookieRaw;
+		
+		// Nếu vẫn là string (double stringify từ v1), parse lần 2
+		if (typeof parsed === 'string') {
+			parsed = JSON.parse(parsed);
+		}
+		
+		// Kiểm tra phải là Array
+		if (!Array.isArray(parsed)) {
+			throw new Error('Cookie must be an array');
+		}
+		
+		return parsed;
+	} catch (error) {
+		throw new Error(`Invalid cookie format: ${(error as Error).message}`);
 	}
 }
 

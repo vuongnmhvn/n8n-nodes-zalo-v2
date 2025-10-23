@@ -8,7 +8,6 @@ import {
 	IDataObject,
 } from 'n8n-workflow';
 import { API, Zalo, ThreadType } from 'zca-js';
-import { imageMetadataGetter } from '../utils/helper';
 
 let api: API | undefined;
 let reconnectTimer: NodeJS.Timeout | undefined;
@@ -95,7 +94,7 @@ export class ZaloMessageTrigger implements INodeType {
 					const userAgentFromCred = credentials.userAgent as string;
 
 					const selfListen = this.getNodeParameter('selfListen', 0) as boolean;
-					const zalo = new Zalo({ selfListen, imageMetadataGetter });
+					const zalo = new Zalo({ selfListen });
 					api = await zalo.login({ cookie: cookieFromCred, imei: imeiFromCred, userAgent: userAgentFromCred });
 
 					if (!api) {

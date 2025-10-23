@@ -323,12 +323,12 @@ export const zaloUserFields: INodeProperties[] = [
 			},
 			{
 				name: 'Female',
-				value: 0,
+				value: 2,
 			},
-			// {
-			// 	name: 'Other',
-			// 	value: 3,
-			// },
+			{
+				name: 'Other',
+				value: 3,
+			},
 		],
 		default: 1,
 		description: 'Giới tính',

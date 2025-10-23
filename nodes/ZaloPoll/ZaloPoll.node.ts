@@ -8,7 +8,6 @@ import {
 } from 'n8n-workflow';
 import { zaloPollOperations, zaloPollFields } from './ZaloPollDescription';
 import { API, Zalo } from 'zca-js';
-import { imageMetadataGetter } from '../utils/helper';
 
 let api: API | undefined;
 
@@ -17,7 +16,6 @@ export class ZaloPoll implements INodeType {
             displayName: 'Zalo Poll',
             name: 'zaloPoll',
             icon: 'file:../shared/zalo.svg',
-            // @ts-ignore
             group: ['Zalo'],
             version: 1,
             subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
@@ -70,7 +68,7 @@ export class ZaloPoll implements INodeType {
         const imei = imeiFromCred ?? items.find((x) => x.json.imei)?.json.imei as string;
         const userAgent = userAgentFromCred ?? items.find((x) => x.json.userAgent)?.json.userAgent as string;
 
-        const zalo = new Zalo({ imageMetadataGetter });
+        const zalo = new Zalo();
         const _api = await zalo.login({ cookie, imei, userAgent });
         api = _api;
 
@@ -174,7 +172,7 @@ export class ZaloPoll implements INodeType {
                             throw new NodeOperationError(this.getNode(), 'Zalo API not initialized', { itemIndex: i });
                         }
 
-                        const response = await api.getPollDetail(Number(poll_id));
+                        const response = await api.getPollDetail(poll_id);
 
                         this.logger.info('Get poll successfully', { response});
 
